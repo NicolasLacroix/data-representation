@@ -2,4 +2,4 @@
 
 Data provided by [DataSudLink]
 
-[DataSudLink] : https://www.datasud.fr/
+[DataSudLink]: https://www.datasud.fr/
