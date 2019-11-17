@@ -1,3 +1,5 @@
 # data-representation
 
-Data provided by [DataSud] : https://www.datasud.fr/
+Data provided by [DataSudLink]
+
+[DataSudLink] : https://www.datasud.fr/
