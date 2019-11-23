@@ -1,28 +1,39 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.dates as mdates
-# TODO: visualize the daily consumption
+import dateutil.parser
+from datetime import datetime
+
+# TODO: add min/max visualization
+# TODO: make a pie chart
 # TODO: add stats analysis using scipy
 # (https://docs.scipy.org/doc/scipy/reference/stats.html)
 
 
-def visualize(data, x, y, kind='line'):
-    ax = data.plot(subplots=True, kind=kind, x=x, y=y)
+def visualize(data, x, y=None, subplots=False, kind='line'):
+    if not y:
+        ax = data.plot(subplots=subplots, kind=kind, x=x)
+    else:
+        ax = data.plot(subplots=subplots, kind=kind, x=x, y=y)
     plt.show()
 
 
-def getDailyData(data):
-    # TODO: get daily values per hour
+def getDailyData(data, *args):
+    if len(args) == 0:
+        raise ValueError('args must be non-empty')
+    param = []
+    for elem in args:
+        if type(elem) is list:
+            param += elem
+        else:
+            param.append(elem)
     res = {}
     for date, values in data.groupby(['Date']):
-        # day_values = values[['Date - Heure', 'Consommation (MW)']]
-        res[date] = values[['Date - Heure', 'Consommation (MW)']]
+        res[date.strftime('%Y-%m-%d')] = values[param]
     return res
 
 
 def getExtremums(data, key):
-    print(type(data))
     return (min(data[key]), max(data[key]))
 
 
@@ -40,14 +51,21 @@ def normalize(data):
 def main():
     fp = '../Datasets/ProdConso/eco2mix-regional-tr.csv'
     data = getData(fp)
+    data['Date'] = pd.to_datetime(data['Date'])
+    data['Heure'] = pd.to_datetime(data['Heure'], format='%H:%M')
+    data[
+        'Date - Heure'] = pd.to_datetime(data['Date - Heure'], format='%Y-%m-%dT%H:%M:%S')
+
+    volumeLabels = list(data.columns.values)[7:14]
+    percentLabels = list(data.columns.values)[15:-1]
 
     print(getExtremums(data, 'Consommation (MW)'))
 
-    dailyData = getDailyData(data)
+    dailyData = getDailyData(data, 'Date - Heure', volumeLabels)
+    print(dailyData['2019-10-01']['Date - Heure'])
 
-    print(dailyData)
-    visualize(dailyData['2019-10-01'], 'Date - Heure',
-              'Consommation (MW)')
+    visualize(dailyData['2019-10-02'], 'Date - Heure',
+              subplots=False, kind='line')
 
 if __name__ == '__main__':
     main()
