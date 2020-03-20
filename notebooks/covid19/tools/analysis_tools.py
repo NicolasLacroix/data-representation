@@ -42,8 +42,11 @@ def getDataFromDayZero(country, datasets, threshold=0):
         country_data = getCountryGroupedData(country, d_data)
         if (dayZeroPos == -1):
             dayZeroPos = 4
-            while (country_data.iloc[:, dayZeroPos].values[0] < 200):
-                dayZeroPos += 1
+            if (country_data.iloc[:, -1].values[0] < threshold):
+                day_zeroPos = country_data.size
+            else:
+                while (country_data.iloc[:, dayZeroPos].values[0] < threshold):
+                    dayZeroPos += 1
         day = 0
         for column in country_data.columns[dayZeroPos:]:
             countryDict[d_name][day] = country_data[column].values[0]
